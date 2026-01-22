@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PipoGotchi - Game Landing</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS v4 Play CDN [web:6] -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind v4 @theme customization [web:6] -->
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: "Google Sans", ui-sans-serif, system-ui, sans-serif;
+            --color-slate-900: 15 25 29;
+            --color-blue-800: 30 64 175;
+            --color-white: 255 255 255;
+        }
+    </style>
+    <style>
+        .google-sans {
+            font-family: "Google Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-variation-settings: "GRAD" 0;
+        }
+        /* Pulsing glow animation for button */
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8), 0 0 60px rgba(59, 130, 246, 0.4); }
+        }
+        .glow-pulse {
+            animation: glow-pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col p-8 md:p-12 lg:p-16 overflow-hidden">
+    <!-- Background Canvas for lights -->
+    <canvas id="bgCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
+    
+    <!-- Main Content -->
+    <main class="relative z-10 flex-1 flex flex-col lg:flex-row gap-8 lg:gap-12 max-w-7xl mx-auto w-full items-stretch lg:items-center">
+        <!-- Left Column: Title, Desc, Download - Alinhado ao centro vertical -->
+        <div class="lg:w-1/2 flex flex-col justify-center items-center lg:items-start space-y-8 lg:space-y-12 text-center lg:text-left">
+            <div class="space-y-6 max-w-md">
+                <p>Windows 10/11</p>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold google-sans leading-tight bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent drop-shadow-2xl">
+                    PipoGotchi
+                </h1>
+                <p class="text-slate-300 leading-relaxed">
+                    Pet virtual inspirado em Meu Vizinho Totoro que vive na sua área de trabalho. Animações fluidas de andar, pular e dormir, com interações como carinho, 6 comidas animadas e brincadeiras (bola, basquete e pipa). Totalmente portátil 
+                </p>
+            </div>
+            <div class="flex justify-center lg:justify-start">
+                <a href="PipoGotchi.exe" download class="group relative inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-800 via-blue-700 to-purple-800 hover:from-blue-700 hover:via-blue-600 hover:to-purple-700 active:from-blue-900 active:to-purple-900 transition-all duration-500 ease-out transform hover:scale-110 hover:-translate-y-2 shadow-2xl hover:shadow-3xl hover:shadow-[0_0_60px_rgba(59,130,246,0.6)] active:scale-105 active:translate-y-0 font-semibold text-lg google-sans backdrop-blur-md border border-blue-700/50 hover:border-blue-500/70 rounded-3xl overflow-hidden glow-pulse">
+                    <!-- Pulsing shine effect -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out opacity-75"></div>
+                    <svg class="w-6 h-6 mr-3 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="relative z-10">Download Gratuito</span>
+                    <!-- Hover particles effect -->
+                    <div class="absolute -inset-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="absolute top-2 left-2 w-2 h-2 bg-white/30 rounded-full animate-ping"></div>
+                        <div class="absolute bottom-2 right-2 w-2 h-2 bg-white/30 rounded-full animate-ping [animation-delay:0.2s]"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Right Column: Full-size Game Image sem bordas -->
+        <div class="lg:w-3/3 flex justify-center items-center h-full">
+            <img src="assets/PipoGotchi2.png" alt="PipoGotchi" class="w-full h-full object-cover">
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="relative z-10 mt-auto pt-12 pb-8 text-center border-t border-slate-800">
+        <p class="text-slate-500 font-medium google-sans">&copy; 2026 Desenvolvido por - André.</p>
+    </footer>
+
+    <!-- Interactive Lights JavaScript - Ajustado para seguir mouse sem delay -->
+    <script>
+        // Canvas setup for interactive lights [web:11][web:15]
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        const lights = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Mouse interaction - resposta imediata sem delay
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        // Touch support for mobile
+        document.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
+        });
+        
+        // Create lights
+        for (let i = 0; i < 12; i++) {
+            lights.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2,
+                size: Math.random() * 80 + 50,
+                hue: Math.random() * 60 + 200, // Blues/purples for NFT futuristic
+                brightness: Math.random() * 0.5 + 0.5
+            });
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Global blur for smooth effect
+            ctx.filter = 'blur(25px)';
+            
+            lights.forEach(light => {
+                // Atração mais forte e rápida para o mouse (sem delay)
+                const dx = mouseX - light.x;
+                const dy = mouseY - light.y;
+                light.vx = dx * 0.02 + light.vx * 0.92; // Mais responsivo
+                light.vy = dy * 0.02 + light.vy * 0.92;
+                light.x += light.vx;
+                light.y += light.vy;
+                
+                // Bounce edges suavemente
+                if (light.x < 0 || light.x > canvas.width) light.vx *= -0.8;
+                if (light.y < 0 || light.y > canvas.height) light.vy *= -0.8;
+                
+                // Render glow
+                const gradient = ctx.createRadialGradient(light.x, light.y, 0, light.x, light.y, light.size);
+                gradient.addColorStop(0, `hsla(${light.hue}, 70%, 60%, ${light.brightness})`);
+                gradient.addColorStop(0.5, `hsla(${light.hue}, 50%, 40%, ${light.brightness * 0.6})`);
+                gradient.addColorStop(1, 'transparent');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(light.x - light.size, light.y - light.size, light.size * 2, light.size * 2);
+            });
+            
+            ctx.filter = 'none';
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Download confirmation (opcional - remove se não quiser)
+        document.querySelector('a[href="PipoGotchi.exe"]').addEventListener('click', function(e) {
+            console.log('Iniciando download de PipoGotchi.exe da pasta raiz...');
+        });
+    </script>
+</body>
+</html>
