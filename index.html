@@ -101,6 +101,12 @@
             pointer-events: none;
             transform: translate(-50%, -50%);
         }
+
+        .navbar-glass {
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px); /* Safari/Chrome antigo */
+        }
+
     </style>
 </head>
 <body class="bg-slate-900 text-white antialiased overflow-x-hidden selection:bg-indigo-800 selection:text-white">
@@ -116,7 +122,7 @@
     <div class="relative z-10 flex flex-col min-h-screen">
         
         <!-- Header -->
-        <header class="w-full border-b border-white/10 backdrop-blur-xl fixed top-0 left-0 z-50 bg-slate-900/50">
+        <header class="w-full border-b border-white/10 backdrop-blur-xl fixed top-0 left-0 z-50 bg-slate-900/50 navbar-glass">
             <div class="container mx-auto px-6 py-4 flex justify-between items-center">
                 <a href="#" class="block">
                     <img 
@@ -415,6 +421,7 @@
     </script>
 </body>
 </html>
+
 
 
 
